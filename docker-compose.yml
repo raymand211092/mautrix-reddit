@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  mautrix-reddit:
+    build: .
+    container_name: mautrix-reddit
+    restart: unless-stopped
+    
+    volumes:
+      # Montear directorio de datos
+      - ./data:/data
+      
+    networks:
+      - matrix
+    
+    # Exponer puerto del appservice
+    ports:
+      - "29320:29320"
+    
+    # Variables de entorno opcionales
+    environment:
+      - TZ=UTC
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:29320/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  matrix:
+    external: true
+
+# Antes de ejecutar:
+# 1. Crear el directorio de datos: mkdir -p data
+# 2. Copiar configuración: cp example-config.yaml data/config.yaml
+# 3. Editar data/config.yaml con tus configuraciones
+# 4. Generar registro: docker-compose run --rm mautrix-reddit -g
+# 5. Copiar data/registration.yaml a tu servidor Matrix
+# 6. Reiniciar servidor Matrix
+# 7. Ejecutar: docker-compose up -d

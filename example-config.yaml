@@ -1,0 +1,89 @@
+# Homeserver details
+homeserver:
+  # The address that this appservice can use to connect to the homeserver.
+  # Local addresses are recommended for optimal performance.
+  address: https://matrix.example.com
+  # The domain of your homeserver (server_name in homeserver.yaml, generally the part after the : in Matrix IDs).
+  domain: example.com
+
+# Application service host/registration related details
+appservice:
+  # The address that the homeserver can use to connect to this appservice.
+  address: http://localhost:29320
+
+  # The hostname and port where this appservice should listen.
+  hostname: 0.0.0.0
+  port: 29320
+
+  # Database config.
+  database:
+    # The database type. "sqlite3-fk-wal" is recommended.
+    type: sqlite3-fk-wal
+    # The database URI.
+    #   SQLite: A raw file path is supported, but `file:<path>?_txlock=immediate` is recommended.
+    #   Postgres: Connection string. For example, `postgres://user:password@host/database?sslmode=disable`
+    uri: file:mautrix-reddit.db?_txlock=immediate
+
+  # The unique ID of this appservice.
+  id: reddit
+  # Appservice bot details.
+  bot:
+    # Username of the appservice bot.
+    username: redditbot
+    # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
+    # to leave display name/avatar as-is.
+    displayname: Reddit Bridge Bot
+    avatar: mxc://maunium.net/reddit-icon
+
+  # Whether to receive ephemeral events via appservice transactions.
+  ephemeral_events: true
+
+  # Authentication tokens for AS <-> HS communication.
+  as_token: "This value is generated when generating the registration"
+  hs_token: "This value is generated when generating the registration"
+
+# Bridge config
+bridge:
+  # Localpart template for Reddit users.
+  # {userid} is replaced with the Reddit username of the user.
+  username_template: "reddit_{userid}"
+  
+  # Displayname template for Reddit users.
+  # {displayname} is replaced with the display name of the Reddit user.
+  displayname_template: "{displayname} (Reddit)"
+
+  # Whether to allow users to use the bridge without being whitelisted.
+  # If false, users must be in the permissions section to use the bridge.
+  allow_all_users: false
+
+  # Permissions for using the bridge.
+  # Permitted values:
+  #     relay - Allowed to be relayed through the bridge, no access to commands.
+  #   commands - Allowed to use bridge commands.
+  #      user - Allowed to use the bridge with puppeting.
+  #     admin - Allowed to use bridge admin commands.
+  # Permitted keys:
+  #        * - All Matrix users
+  #   domain - All users on that homeserver
+  #     mxid - Specific user
+  permissions:
+    "example.com": user
+    "@admin:example.com": admin
+
+# Logging config
+logging:
+  # Minimum level to log. Valid levels: debug, info, warn, error, fatal
+  min_level: info
+  
+  writers:
+    - type: stdout
+      format: pretty-colored
+      time_format: "15:04:05"
+
+# Reddit-specific configuration (optional)
+reddit:
+  # Default client ID and secret for users who don't provide their own
+  # Users can create their own app at https://www.reddit.com/prefs/apps
+  # default_client_id: ""
+  # default_client_secret: ""
+  # user_agent: "mautrix-reddit/0.1.0"
